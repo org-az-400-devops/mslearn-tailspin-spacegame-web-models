@@ -4,6 +4,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   dotnetSdkVersion: '8.0.x'
+  packageVersion: '1.0.0'
 
 steps:
 - task: UseDotNet@2
@@ -23,13 +24,13 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Pack the project - $(buildConfiguration)'
+  displayName: 'Pack NuGet package'
   inputs:
     command: 'pack'
     projects: '**/*.csproj'
     arguments: '--no-build --configuration $(buildConfiguration)'
-    versioningScheme: 'off'  # Use version from project file
-  condition: succeeded()
+    versioningScheme: byEnvVar
+    versionEnvVar: packageVersion
 
 - task: NuGetCommand@2
   displayName: 'Publish NuGet package'
