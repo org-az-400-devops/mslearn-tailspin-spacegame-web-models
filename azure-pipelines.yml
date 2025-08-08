@@ -3,12 +3,13 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  dotnetSdkVersion: '8.0.x'
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET 6.0 SDK'
+  displayName: 'Use .NET SDK $(dotnetSdkVersion)'
   inputs:
-    version: '6.0.x'
+    version: '$(dotnetSdkVersion)'
     includePreviewVersions: false
 
 - script: dotnet --version
