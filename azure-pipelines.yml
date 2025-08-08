@@ -4,6 +4,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   dotnetSdkVersion: '6.0.x'
+  packageVersion: '1.0.0'
 
 steps:
 - task: UseDotNet@2
@@ -14,33 +15,25 @@ steps:
     includePreviewVersions: false
 
 - task: DotNetCoreCLI@2
-  displayName: 'Restore project dependencies'
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Build the project - $(buildConfiguration)'
+  displayName: 'Restore & Build'
   inputs:
     command: 'build'
-    arguments: '--no-restore --configuration $(buildConfiguration)'
     projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Pack the project - $(buildConfiguration)'
+  displayName: 'Pack NuGet package'
   inputs:
     command: 'pack'
     projects: '**/*.csproj'
     arguments: '--no-build --configuration $(buildConfiguration)'
-    versioningScheme: byPrereleaseNumber
-    majorVersion: '1'
-    minorVersion: '0'
-    patchVersion: '0'
- 
+    versioningScheme: byEnvVar
+    versionEnvVar: packageVersion
+
 - task: NuGetCommand@2
   displayName: 'Publish NuGet package'
   inputs:
     command: push
-    feedPublish: '$(System.TeamProject)/Tailspin.SpaceGame.Web.Models'
+    feedPublish: 'Tailspin.SpaceGame.Web.Models' # Replace with your feed name
     allowPackageConflicts: true
   condition: succeeded()
